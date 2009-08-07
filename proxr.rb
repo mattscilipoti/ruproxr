@@ -51,9 +51,18 @@ end
     send_command relay_on_cmd, bank_number
   end
 
+  def relay_on?(relay_number, bank_number)
+    relay_status(relay_number, bank_number) == 1
+  end
+
   def relay_off(relay_number, bank_number)
     relay_off_cmd = (100+relay_number)
     send_command relay_off_cmd, bank_number
+  end
+
+  def relay_status(relay_number, bank_number)
+    relay_status_cmd = (116+relay_number)
+    send_command relay_status_cmd, bank_number
   end
 
   def show_all_voltages
@@ -67,7 +76,7 @@ end
 
 if $0 == __FILE__
   require 'test/unit'
-  class TestReportingMode < Test::Unit::TestCase
+  class TestProXR < Test::Unit::TestCase
     def setup
       @serial_port = ProXR.new
     end
@@ -108,6 +117,25 @@ if $0 == __FILE__
       assert @serial_port.has_voltage?(0)
     end
 
+    def test_relay_status_for_on
+      @serial_port.relay_on(0, 1)
+      assert_equal 1, @serial_port.relay_status(0, 1)
+    end
+
+    def test_relay_status_for_off
+      @serial_port.relay_off(0, 1)
+      assert_equal 0, @serial_port.relay_status(0, 1)
+    end
+
+    def test_when_on_relay_on?
+      @serial_port.relay_on(0, 1)
+      assert @serial_port.relay_on?(0, 1)
+    end
+
+    def test_when_off_relay_on?
+      @serial_port.relay_off(0, 1)
+      assert !@serial_port.relay_on?(0, 1)
+    end
   end
 end
 
