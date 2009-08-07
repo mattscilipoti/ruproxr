@@ -8,10 +8,11 @@ class ProXR < SerialPort
   def initialize(device = "/dev/ttyS0", *params)
     default_params = {:baud_rate => 115200}
     super device, default_params.merge(params)
+    read_timeout = 2
   end
 
   def send_command(*cmds)
-    Timeout::timeout(0.5) do
+    Timeout::timeout(10) do
       write 254.chr
       cmds.each {|cmd| write cmd.chr }
 
@@ -24,7 +25,10 @@ class ProXR < SerialPort
   end
 
   def read_voltage(channel)
-    send_command(150 + channel)
+    max_voltage = 5
+    max_reading_for_8_bit = 255
+    voltage_conversion_factor = (max_reading_for_8_bit/max_voltage)
+    send_command(150 + channel)/ voltage_conversion_factor
   end
 
   def relay_on(relay_number, bank_number)
@@ -38,10 +42,9 @@ class ProXR < SerialPort
   end
 
   def show_all_voltages
-    p = ProXR.new
-    puts "Ch:Volt"
-    (0..7).each do |channel|
-      puts " #{channel}:#{p.read_voltage(channel)}"
+#    puts "Ch:Volt"
+    (0..7).collect do |channel|
+      "#{channel}:#{read_voltage(channel)}"
     end
   end
 
