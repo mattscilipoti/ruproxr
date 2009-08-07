@@ -5,10 +5,12 @@ require 'timeout'
 class ProXR < SerialPort
   SUCCESS = 85
 
-  def initialize(device = "/dev/ttyS0", *params)
-    default_params = {:baud_rate => 115200}
-    super device, default_params.merge(params)
-    read_timeout = 2
+  #SerialPort uses ::new instead of initialize.
+  def ProXR::new(port = "/dev/ttyS0", *params)
+    default_params = [115200]
+    default_params.each_with_index {|param, index| params[index] = param unless params[index] }
+    super port, *params
+#    read_timeout = 2 #does this do anything?
   end
 
   def send_command(*cmds)
@@ -54,7 +56,7 @@ if $0 == __FILE__
   require 'test/unit'
   class TestReportingMode < Test::Unit::TestCase
     def setup
-      @serial_port = ProXR.new "/dev/ttyS0"
+      @serial_port = ProXR.new
     end
 
     def test_should_indicate_it_is_in_reporting_mode
