@@ -19,6 +19,8 @@ class LightRelay
         1
       when :red
         2
+      else
+        raise "That relay_indicator (#{relay_indicator}) is not supported."
     end
   end
 
