@@ -14,10 +14,9 @@ class ProXR < SerialPort
   end
 
   def send_command(*cmds)
-    Timeout::timeout(10) do
+    Timeout::timeout(1) do
       write 254.chr
       cmds.each {|cmd| write cmd.chr }
-
       getc
     end
   end
@@ -26,12 +25,22 @@ class ProXR < SerialPort
     send_command(27)
   end
 
-  def read_voltage(channel)
-    max_voltage = 5
-    max_reading_for_8_bit = 255
-    voltage_conversion_factor = (max_reading_for_8_bit/max_voltage)
-    send_command(150 + channel)/ voltage_conversion_factor
-  end
+  def read_voltage(channel, data_bits = 8)
+    case data_bits
+      when 8
+      max_voltage = 5
+      max_value = max_reading_for_8_bit = 255
+      cmd = 150
+    end
+
+    voltage_conversion_factor = (max_value/max_voltage)
+    ad_voltage = send_command(cmd + channel)
+    voltage = ad_voltage / voltage_conversion_factor
+
+    #special case for 8-bit
+    voltage = 0 if data_bits == 8 && ad_voltage == 255
+    voltage
+end
 
   def relay_on(relay_number, bank_number)
     relay_on_cmd = (108+relay_number)
@@ -63,8 +72,8 @@ if $0 == __FILE__
       assert_equal ProXR::SUCCESS, @serial_port.reporting_mode
     end
 
-    def test_voltage_at_0_1_should_be_255
-      assert_equal 255, @serial_port.read_voltage(0)
+    def test_voltage_at_0_1_should_be_zero
+      assert_equal 0, @serial_port.read_voltage(0)
     end
 
     def test_relay_on_0_1
