@@ -13,6 +13,10 @@ class ProXR < SerialPort
 #    read_timeout = 2 #does this do anything?
   end
 
+  def has_voltage?(channel)
+    read_voltage(channel) > 0 ? true : false
+  end
+
   def send_command(*cmds)
     Timeout::timeout(1) do
       write 254.chr
@@ -84,9 +88,26 @@ if $0 == __FILE__
       assert_equal ProXR::SUCCESS, @serial_port.relay_off(0, 1)
     end
 
-#    def set_relay_status(:red, :green)
-#
-#    end
+    def test_has_voltage_without_voltage
+      @serial_port.instance_eval do
+        def read_voltage(*args)
+          0
+        end
+      end
+
+      assert !@serial_port.has_voltage?(0)
+    end
+
+    def test_has_voltage_wit_voltage
+      @serial_port.instance_eval do
+        def read_voltage(*args)
+          2
+        end
+      end
+
+      assert @serial_port.has_voltage?(0)
+    end
+
   end
 end
 
