@@ -251,6 +251,7 @@ if $0 == __FILE__
   unless ENV['DEVICE'] =~ /true/i
     puts "Skipping tests against actual device.  Use `DEVICE=true ruby proxr.rb` to enable these tests."
   else
+    puts "*** Ensure device is connected.  Running tests against actual device. ***"
     class TestProXR_Live < Test::Unit::TestCase
       def setup
         @serial_port = ProXR.new

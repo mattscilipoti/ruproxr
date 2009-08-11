@@ -44,6 +44,11 @@ end
 
 
 if $0 == __FILE__
+  begin
+    require 'redgreen';
+  rescue LoadError;
+  end
+  
   require 'test/unit'
   class TestLightRelay < Test::Unit::TestCase
     def setup

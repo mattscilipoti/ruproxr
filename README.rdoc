@@ -9,3 +9,4 @@ Ruby wrapper for ProXR library. Used by the NCD ProXR Controllers (http://www.co
 == Needs
  * separate and gemify
  * docs
+ * rake tasks: test
