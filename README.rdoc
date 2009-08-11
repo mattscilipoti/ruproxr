@@ -1,0 +1,11 @@
+= ruproxr
+
+Ruby wrapper for ProXR library. Used by the NCD ProXR Controllers (http://www.controlanything.com/Relay/SRCH).
+
+== Status
+
+*Early alpha.*  It is still just a collection of files.  The proxr.rb file is a functional, tested, wrapper for the ProXR library.
+
+== Needs
+ * separate and gemify
+ * docs
