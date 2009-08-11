@@ -233,7 +233,7 @@ if $0 == __FILE__
 
   end
 
-  unless ENV['DEVICE'].match(/true/i)
+  unless ENV['DEVICE'] =~ /true/i
     puts "Skipping tests against actual device.  Use `DEVICE=true ruby proxr.rb` to enable these tests."
   else
     class TestProXR_Live < Test::Unit::TestCase
