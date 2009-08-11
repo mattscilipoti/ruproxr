@@ -2,6 +2,8 @@ require 'rubygems'
 require 'serialport'
 require 'timeout'
 
+#Ruby wrapper for ProXR library. 
+#Used by the NCD ProXR Controllers (http://www.controlanything.com/Relay/SRCH).
 class ProXR < SerialPort
   COMMAND_MODE = 254
   READ_VOLTAGE_8_BITS = 150

@@ -1,5 +1,6 @@
 require 'proxr'
 
+#Controls the video cameras, watching the lanes.
 class VideoController
   attr_accessor :pro_xr
 
@@ -125,8 +126,11 @@ if $0 == __FILE__
       @it.record_violation(lane_number)
     end
 
+    def test_should_delegate_enforcing_to_light_watcher
 
-    def test_should_record_violation_if_vehicle_enters_violation_zone_and_violation_is_possible #assumes channel only receives  violations are possible.
+    end
+
+    def test_should_record_violation_if_vehicle_enters_violation_zone_and_enforcing #assumes channel only receives  violations are possible.
 
     end
   end
