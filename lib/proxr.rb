@@ -30,10 +30,12 @@ class ProXR < SerialPort
     base_cmd + channel
   end
 
+  #Does this channel have any voltage?
   def has_voltage?(channel)
     read_voltage(channel) > 0 ? true : false
   end
 
+  #used by read_voltage
   def max_channel_reading(data_bits)
     case data_bits
       when 8
@@ -43,11 +45,15 @@ class ProXR < SerialPort
     end
   end
 
+  #used by read_voltage
   def max_channel_voltage
     5
   end
 
-  #Command return value from ProXR
+  #puts the device in Command Mode, then
+  #runs each command,
+  #returning the final value from ProXR
+  #Has Timeout.
   def process_commands(*cmds)
     Timeout::timeout(1) do
       send_command(COMMAND_MODE)
@@ -64,6 +70,10 @@ class ProXR < SerialPort
     result
   end
 
+  #Reads the voltage from the specified channel.
+  #Defaults to 8 bit.
+  # Supports:
+  # * 8 bit
   def read_voltage(channel, data_bits = 8)
     ad_voltage = process_commands(ProXR.read_voltage_command(channel))
 
@@ -74,38 +84,42 @@ class ProXR < SerialPort
     voltage
   end
 
+  #Activiate Relay
   def relay_on(relay_number, bank_number)
-
     cmd = RELAY_ON
     relay_on_cmd = (cmd + relay_number)
     process_commands! relay_on_cmd, bank_number
   end
 
+  #Is this thing on?
   def relay_on?(relay_number, bank_number)
     relay_status(relay_number, bank_number) == 1
   end
 
+  #Deactivate Relay
   def relay_off(relay_number, bank_number)
-
     relay_off_cmd = (RELAY_OFF + relay_number)
     process_commands! relay_off_cmd, bank_number
-
   end
 
+  #What is the status (0/1) of this relay?
   def relay_status(relay_number, bank_number)
-
     relay_status_cmd = (RELAY_STATUS + relay_number)
     process_commands relay_status_cmd, bank_number
   end
 
+  #Puts device in Reporting Mode.
   def reporting_mode
     process_commands!(REPORTING)
   end
 
+  #Actually sends the command to the device.
+  #Converts the command to chr prior to sending.
   def send_command(cmd)
     write cmd.chr
   end
 
+  #Scan all
   def show_all_voltages
 #    puts "Ch:Volt"
     (0..7).collect do |channel|
@@ -113,6 +127,7 @@ class ProXR < SerialPort
     end
   end
 
+  #used by read voltage
   def voltage_conversion_factor(data_bits)
     max_channel_reading(data_bits)/max_channel_voltage
   end
